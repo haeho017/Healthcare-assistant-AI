@@ -41,10 +41,48 @@ const App: React.FC = () => {
 
     try {
       const aiResponseText = await getAIResponse(text);
+      // followUp JSON 추출 및 텍스트에서 완전히 제거
+      let messageText = aiResponseText;
+      let followUp = undefined;
+      // ```json ... ``` 또는 {followUp: ...} 패턴 모두 제거
+      try {
+        // ```json ... ``` 패턴
+        const codeBlockRegex = /```json[\s\S]*?```/g;
+        const codeBlockMatch = aiResponseText.match(codeBlockRegex);
+        if (codeBlockMatch) {
+          for (const block of codeBlockMatch) {
+            const jsonMatch = block.match(/```json\s*([\s\S]*?)\s*```/);
+            if (jsonMatch && jsonMatch[1]) {
+              const parsed = JSON.parse(jsonMatch[1]);
+              if (parsed.followUp) {
+                followUp = parsed.followUp;
+              }
+            }
+            messageText = messageText.replace(block, '').trim();
+          }
+        } else {
+          // {"followUp": ...} 패턴 (코드블럭 없이 붙는 경우)
+          const jsonInlineRegex = /\{\s*"followUp"[\s\S]*?\}\s*$/;
+          const inlineMatch = aiResponseText.match(jsonInlineRegex);
+          if (inlineMatch) {
+            try {
+              const parsed = JSON.parse(inlineMatch[0]);
+              if (parsed.followUp) {
+                followUp = parsed.followUp;
+              }
+            } catch {}
+            messageText = messageText.replace(jsonInlineRegex, '').trim();
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing follow-up:', e);
+      }
+
       const aiMessage: ChatMessage = {
         id: `ai-${Date.now()}`,
-        text: aiResponseText,
+        text: messageText,
         sender: MessageSender.AI,
+        followUp,
       };
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
@@ -64,7 +102,12 @@ const App: React.FC = () => {
       <Header />
       <main className="flex-grow overflow-y-auto p-4 space-y-6">
         {messages.map((msg) => (
-          <ChatBubble key={msg.id} message={msg} />
+        <ChatBubble 
+          key={msg.id} 
+          message={msg}
+          onFollowUpSelect={(_value, text) => handleSendMessage(text)}
+          onFollowUpInput={(text) => handleSendMessage(text)}
+        />
         ))}
         {isLoading && (
           <div className="flex justify-start">
