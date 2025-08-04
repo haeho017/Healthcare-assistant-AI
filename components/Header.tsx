@@ -12,7 +12,7 @@ const Header: React.FC = () => {
         <header className="bg-white dark:bg-slate-800 shadow-md p-4 flex items-center justify-center sticky top-0 z-10">
             <HeartIcon />
             <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 ml-2">
-                건강 도우미 AI
+                서울의원 건강 도우미 AI
             </h1>
         </header>
     );
