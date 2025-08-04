@@ -24,7 +24,10 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // 메시지가 2개 이상(즉, 유저 입력 이후)에만 스크롤 이동
+    if (messages.length > 1) {
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   const handleSendMessage = useCallback(async (text: string) => {
