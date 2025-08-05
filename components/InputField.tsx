@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 
 interface InputFieldProps {
@@ -12,7 +11,6 @@ const SendIcon = () => (
   </svg>
 );
 
-
 const InputField: React.FC<InputFieldProps> = ({ onSendMessage, isLoading }) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -25,25 +23,27 @@ const InputField: React.FC<InputFieldProps> = ({ onSendMessage, isLoading }) => 
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 p-4 border-t border-slate-200 dark:border-slate-700 sticky bottom-0">
-      <form onSubmit={handleSubmit} className="flex items-center space-x-3">
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder={isLoading ? "AI가 답변을 준비중입니다..." : "여기에 질문을 입력하세요..."}
-          disabled={isLoading}
-          className="flex-grow p-3 border border-slate-300 dark:border-slate-600 rounded-full focus:ring-2 focus:ring-primary-light focus:outline-none dark:bg-slate-700 dark:text-white transition duration-200"
-        />
-        <button
-          type="submit"
-          disabled={isLoading || !inputValue.trim()}
-          className="bg-primary text-white p-3 rounded-full hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:bg-primary-light disabled:cursor-not-allowed transition duration-200 flex-shrink-0"
-          aria-label="Send message"
-        >
-          <SendIcon />
-        </button>
-      </form>
+    <div className="bg-white dark:bg-slate-800 p-4 border-t border-slate-200 dark:border-slate-700 sticky bottom-0 shadow-lg">
+      <div className="input-bar">
+        <form onSubmit={handleSubmit} className="flex items-center w-full gap-2">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder={isLoading ? "AI가 답변을 준비중입니다..." : "여기에 질문을 입력하세요..."}
+            disabled={isLoading}
+            className="flex-grow p-3 border border-slate-300 dark:border-slate-600 rounded-full focus:ring-2 focus:ring-primary-light focus:outline-none dark:bg-slate-700 dark:text-white transition duration-200 text-base shadow-sm"
+          />
+          <button
+            type="submit"
+            disabled={isLoading || !inputValue.trim()}
+            className="bg-primary text-white p-3 rounded-full hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:bg-primary-light disabled:cursor-not-allowed transition duration-200 flex-shrink-0 shadow-md"
+            aria-label="Send message"
+          >
+            <SendIcon />
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

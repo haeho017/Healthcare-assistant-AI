@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import showdown from 'showdown';
 import { ChatMessage, MessageSender } from '../types';
@@ -17,16 +16,15 @@ const StethoscopeIcon = () => (
     </svg>
 );
 
-
 const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onFollowUpSelect, onFollowUpInput }) => {
   const [followUpInput, setFollowUpInput] = useState('');
   const isUser = message.sender === MessageSender.USER;
 
   const bubbleClasses = isUser
-    ? 'bg-primary text-white self-end'
-    : 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 self-start';
-  
-  const containerClasses = isUser ? 'flex justify-end' : 'flex justify-start items-start gap-3';
+    ? 'bubble-user'
+    : 'bubble-ai';
+
+  const containerClasses = isUser ? 'flex justify-end' : 'flex justify-start items-start gap-2';
 
   const renderedHtml = useMemo(() => {
     if (!isUser) {
@@ -46,19 +44,19 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onFollowUpSelect, onFo
   return (
     <div className={containerClasses}>
        {!isUser && <StethoscopeIcon />}
-      <div className={`rounded-xl px-3 py-2 shadow-sm max-w-[90vw] sm:max-w-xl text-[15px] leading-relaxed ${bubbleClasses}`} style={{wordBreak: 'break-word'}}>
+      <div className={bubbleClasses}>
         {isUser ? (
           <p className="whitespace-pre-wrap">{message.text}</p>
         ) : (
           <div
-            className="prose prose-xs sm:prose-sm dark:prose-invert max-w-none prose-headings:text-primary-dark prose-headings:font-semibold dark:prose-headings:text-primary-light prose-strong:text-slate-900 dark:prose-strong:text-slate-50 prose-a:text-primary hover:prose-a:text-primary-dark prose-p:my-1 prose-li:my-0 prose-ul:pl-4 prose-ol:pl-4 prose-h1:text-lg prose-h2:text-base prose-h3:text-sm prose-h1:my-2 prose-h2:my-1 prose-h3:my-1 prose-p:text-[15px] prose-li:text-[15px]"
-            style={{lineHeight:1.6, wordBreak:'break-word'}}
+            className="prose max-w-none"
+            style={{lineHeight:1.7, wordBreak:'break-word'}}
             dangerouslySetInnerHTML={{ __html: renderedHtml! }}
           />
         )}
         {!isUser && message.followUp && (
-          <div className="mt-4 space-y-3">
-            <p className="text-sm text-slate-600 dark:text-slate-300">{message.followUp.question}</p>
+          <div className="followup-list">
+            <p className="text-sm">{message.followUp.question}</p>
             {message.followUp.options ? (
               <div className="flex flex-wrap gap-2">
                 {message.followUp.options.map((option, index) => (

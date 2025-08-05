@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChatMessage, MessageSender } from './types';
 import { getAIResponse } from './services/geminiService';
@@ -24,7 +23,6 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // 메시지가 2개 이상(즉, 유저 입력 이후)에만 스크롤 이동
     if (messages.length > 1) {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
@@ -41,12 +39,9 @@ const App: React.FC = () => {
 
     try {
       const aiResponseText = await getAIResponse(text);
-      // followUp JSON 추출 및 텍스트에서 완전히 제거
       let messageText = aiResponseText;
       let followUp = undefined;
-      // ```json ... ``` 또는 {followUp: ...} 패턴 모두 제거
       try {
-        // ```json ... ``` 패턴
         const codeBlockRegex = /```json[\s\S]*?```/g;
         const codeBlockMatch = aiResponseText.match(codeBlockRegex);
         if (codeBlockMatch) {
@@ -61,7 +56,6 @@ const App: React.FC = () => {
             messageText = messageText.replace(block, '').trim();
           }
         } else {
-          // {"followUp": ...} 패턴 (코드블럭 없이 붙는 경우)
           const jsonInlineRegex = /\{\s*"followUp"[\s\S]*?\}\s*$/;
           const inlineMatch = aiResponseText.match(jsonInlineRegex);
           if (inlineMatch) {
@@ -98,9 +92,9 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen max-w-3xl mx-auto bg-slate-50 dark:bg-slate-900 shadow-2xl">
+    <div className="min-h-screen flex flex-col" style={{background: 'var(--background)'}}>
       <Header />
-      <main className="flex-grow overflow-y-auto p-4 space-y-6">
+      <main id="chat-area">
         {messages.map((msg) => (
         <ChatBubble 
           key={msg.id} 
@@ -111,7 +105,7 @@ const App: React.FC = () => {
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-white dark:bg-slate-700 rounded-xl p-4 shadow-sm">
+            <div className="card">
                 <LoadingSpinner />
             </div>
           </div>
